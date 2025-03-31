@@ -3,7 +3,6 @@ import numpy as np
 import os
 import sys
 import tensorflow as tf
-from tensorflow.keras.callbacks import EarlyStopping
 from sklearn.model_selection import train_test_split
 from tensorflow.keras.regularizers import l2
 
@@ -30,14 +29,9 @@ def main():
 
     # Get a compiled neural network
     model = get_model()
-    
-    # use Early Stopping to stop if no improvement in training
-    early_stopping = EarlyStopping(
-        monitor="val_loss", patience=5, restore_best_weights=True
-    )
 
     # Fit model on training data
-    model.fit(x_train, y_train, epochs=EPOCHS, callbacks=[early_stopping])
+    model.fit(x_train, y_train, epochs=EPOCHS)
 
     # Evaluate neural network performance
     model.evaluate(x_test,  y_test, verbose=2)
@@ -48,20 +42,7 @@ def main():
         model.save(filename)
         print(f"Model saved to {filename}")
 
-
 def load_data(data_dir):
-    """
-    Load image data from directory `data_dir`.
-    Assume `data_dir` has one directory named after each category, numbered
-    0 through NUM_CATEGORIES - 1. Inside each category directory will be some
-    number of image files.
-
-    Return tuple `(images, labels)`. `images` should be a list of all
-    of the images in the data directory, where each image is formatted as a
-    numpy ndarray with dimensions IMG_WIDTH x IMG_HEIGHT x 3. `labels` should
-    be a list of integer labels, representing the categories for each of the
-    corresponding `images`.
-    """
     images = []
     labels = []
     
@@ -95,12 +76,6 @@ def load_data(data_dir):
 
 
 def get_model():
-    """
-    Returns a compiled convolutional neural network model. Assume that the
-    `input_shape` of the first layer is `(IMG_WIDTH, IMG_HEIGHT, 3)`.
-    The output layer should have `NUM_CATEGORIES` units, one for each category.
-    """
-    
     try:
         # Create a sequential model
         model = tf.keras.models.Sequential()
